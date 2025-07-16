@@ -1,9 +1,11 @@
 package com.example.Centralthon.domain.member.entity;
 
 import com.example.Centralthon.domain.member.entity.enums.MemberRole;
+import com.example.Centralthon.domain.member.web.dto.SignUpReq;
 import com.example.Centralthon.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -18,7 +20,7 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String memberId;
+    private String email;
 
     @Column(nullable = false)
     private String password;
@@ -28,4 +30,14 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+    public static Member toEntity(SignUpReq signUpReq, PasswordEncoder passwordEncoder) {
+
+        return Member.builder()
+                .email(signUpReq.getEmail())
+                .password(passwordEncoder.encode(signUpReq.getPassword()))
+                .nickName(signUpReq.getNickName())
+                .role(MemberRole.USER)
+                .build();
+    }
 }
