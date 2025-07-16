@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +21,13 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
+    @Transactional
     public void signUp(SignUpReq signUpReq) {
-        if(memberRepository.existsByMemberId(signUpReq.getMemberId())){
-            throw new MemberAlreadyExistException(MemberErrorCode.MEMBER_ID_ALREADY_EXIST);
-        }
+        if (memberRepository .findByEmailOrNickName(signUpReq.getEmail(), signUpReq.getNickName()) .isPresent()) {
+            throw new MemberAlreadyExistException(); }
 
-        if (memberRepository.existsByNickName(signUpReq.getNickName())) {
-            throw new MemberAlreadyExistException(MemberErrorCode.MEMBER_NICKNAME_ALREADY_EXIST);
-        }
+        Member newMember = Member.toEntity(signUpReq, passwordEncoder);
 
-        Member member = Member.builder()
-                .memberId(signUpReq.getMemberId())
-                .password(passwordEncoder.encode(signUpReq.getPassword()))
-                .nickName(signUpReq.getNickName())
-                .role(MemberRole.USER)
-                .build();
-
-        memberRepository.save(member);
+        memberRepository.save(newMember);
     }
 }
