@@ -26,8 +26,9 @@ public class MemberServiceImpl implements MemberService {
         if (memberRepository .findByEmailOrNickName(signUpReq.getEmail(), signUpReq.getNickName()) .isPresent()) {
             throw new MemberAlreadyExistException(); }
 
-        Member newMember = Member.toEntity(signUpReq, passwordEncoder);
+        String encoded = passwordEncoder.encode(signUpReq.getPassword());
+        Member member = Member.toEntity(signUpReq.getEmail(),encoded,signUpReq.getNickName());
 
-        memberRepository.save(newMember);
+        memberRepository.save(member);
     }
 }
