@@ -1,8 +1,12 @@
 package com.example.Centralthon.global.config;
 
+import com.example.Centralthon.global.exception.CustomAccessDeniedHandler;
+import com.example.Centralthon.global.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,21 +16,31 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final JwtTokenFilter jwtTokenFilter;
 
+    // 비밀번호 인코더
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // 필터 체인 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/members/signup", "/api/members/login").permitAll() //누구나 접근 허용
-                        .requestMatchers("/api/members/profile").hasRole("ADMIN") // 관리자만 프로필 열람 가능
+                        .requestMatchers("/api/members/profile").hasRole("ADMIN") // 관리자 권한 필요한 API
                         .anyRequest().authenticated() //로그인한 사용자만 접근 허용
+                )
+
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 );
+
         return http.build();
     }
 }

@@ -12,4 +12,7 @@ public enum MemberRole {
     @Getter
     private final String memberRole;
 
+    public String getStringRole() {
+        return memberRole;
+    }
 }

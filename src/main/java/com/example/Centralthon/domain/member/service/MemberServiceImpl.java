@@ -2,10 +2,14 @@ package com.example.Centralthon.domain.member.service;
 
 import com.example.Centralthon.domain.member.entity.Member;
 import com.example.Centralthon.domain.member.entity.enums.MemberRole;
+import com.example.Centralthon.domain.member.exception.InvalidCredentialsException;
 import com.example.Centralthon.domain.member.exception.MemberAlreadyExistException;
 import com.example.Centralthon.domain.member.exception.MemberErrorCode;
 import com.example.Centralthon.domain.member.repository.MemberRepository;
+import com.example.Centralthon.domain.member.web.dto.LoginReq;
+import com.example.Centralthon.domain.member.web.dto.LoginRes;
 import com.example.Centralthon.domain.member.web.dto.SignUpReq;
+import com.example.Centralthon.global.jwt.JwtTokenProvider;
 import com.example.Centralthon.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Override
@@ -30,5 +35,23 @@ public class MemberServiceImpl implements MemberService {
         Member member = Member.toEntity(signUpReq.getEmail(),encoded,signUpReq.getNickName());
 
         memberRepository.save(member);
+    }
+
+    @Override
+    public LoginRes login(LoginReq loginReq) {
+        // 아이디 확인
+        Member member = memberRepository.findByEmail(loginReq.getEmail())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(loginReq.getPassword(), member.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+
+        // 토큰 생성
+        String token = jwtTokenProvider.createToken(member);
+
+        // 반환
+        return new LoginRes(token);
     }
 }
