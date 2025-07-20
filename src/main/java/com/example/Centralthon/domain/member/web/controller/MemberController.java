@@ -34,7 +34,7 @@ public class MemberController {
     public ResponseEntity<SuccessResponse<?>> login(@RequestBody @Valid LoginReq loginReq){
         LoginRes loginRes = memberService.login(loginReq);
 
-        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.created(loginRes));
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(loginRes));
     }
 
     // 인가 테스트용 API
