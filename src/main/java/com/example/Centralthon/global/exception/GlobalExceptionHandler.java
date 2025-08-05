@@ -43,6 +43,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException : {}", e.getMessage(), e);
+
+        // 회원 권한 Enum 파싱 실패 했을 때
+        if (e.getMessage() != null && e.getMessage().contains("MemberRole")) {
+            ErrorResponse<?> errorResponse = ErrorResponse.of(
+                    ErrorResponseCode.INVALID_HTTP_MESSAGE_BODY,
+                    "회원 권한은 USER 또는 ADMIN 중 하나여야 합니다.");
+            return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
+        }
+
+        // 일반적인 파싱 실패 처리
         ErrorResponse<?> errorResponse = ErrorResponse.from(ErrorResponseCode.INVALID_HTTP_MESSAGE_BODY);
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
