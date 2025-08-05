@@ -31,13 +31,13 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    public static Member toEntity(String email, String encoded, String nickName) {
+    public static Member toEntity(String email, String encoded, String nickName, MemberRole role) {
 
         return Member.builder()
                 .email(email)
                 .password(encoded)
                 .nickName(nickName)
-                .role(MemberRole.USER)
+                .role(role)
                 .build();
     }
 }
