@@ -9,7 +9,6 @@ import com.example.Centralthon.domain.member.repository.MemberRepository;
 import com.example.Centralthon.domain.member.web.dto.LoginReq;
 import com.example.Centralthon.domain.member.web.dto.LoginRes;
 import com.example.Centralthon.domain.member.web.dto.SignUpReq;
-import com.example.Centralthon.global.jwt.JwtTokenProvider;
 import com.example.Centralthon.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
-
 
     @Override
     @Transactional
@@ -32,7 +29,7 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberAlreadyExistException(); }
 
         String encoded = passwordEncoder.encode(signUpReq.getPassword());
-        Member member = Member.toEntity(signUpReq.getEmail(),encoded,signUpReq.getNickName());
+        Member member = Member.toEntity(signUpReq.getEmail(),encoded,signUpReq.getNickName(),signUpReq.getRole());
 
         memberRepository.save(member);
     }
@@ -48,10 +45,7 @@ public class MemberServiceImpl implements MemberService {
             throw new InvalidCredentialsException();
         }
 
-        // 토큰 생성
-        String token = jwtTokenProvider.createToken(member);
-
         // 반환
-        return new LoginRes(token);
+        return new LoginRes(member.getNickName());
     }
 }
