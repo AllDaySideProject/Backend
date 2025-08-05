@@ -1,11 +1,9 @@
 package com.example.Centralthon.domain.member.web.dto;
 
-import jakarta.validation.constraints.AssertTrue;
+import com.example.Centralthon.domain.member.entity.enums.MemberRole;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 @Getter
 public class SignUpReq {
@@ -22,6 +20,10 @@ public class SignUpReq {
 
     @NotBlank(message = "이름을 입력해주세요.")
     private String nickName;
+
+    @NotNull(message = "회원 권한을 입력해주세요.")
+    private MemberRole role;
+
 
     @AssertTrue(message = "비밀번호가 일치하지 않습니다.")
     public boolean isPasswordMatching() {
