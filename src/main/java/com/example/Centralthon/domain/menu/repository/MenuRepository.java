@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.time.LocalDateTime;
-
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value = "SELECT m.* FROM menus m JOIN stores s ON m.store_id = s.id WHERE " +
@@ -16,10 +15,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             "AND s.longitude BETWEEN :minLng AND :maxLng " +
             "AND ST_Distance_Sphere(POINT(s.longitude, s.latitude), POINT(:lng, :lat)) <= 2000 " +
             "AND m.quantity > 0 " +
-            "AND m.deadline > :now " +
-            "ORDER BY " +
-            "ST_Distance_Sphere(POINT(s.longitude, s.latitude), POINT(:lng, :lat)) ASC, " +
-            "m.deadline ASC", nativeQuery = true)
+            "AND m.deadline > :now", nativeQuery = true)
     List<Menu> findNearbyMenus(
             double lat,
             double lng,
