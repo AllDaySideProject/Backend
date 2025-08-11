@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 @ToString
 @RequiredArgsConstructor
 public class BaseResponse {
-    private final Boolean inSuccess;
+    private final Boolean isSuccess;
     private final String code;
     private final String message;
     private final String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
