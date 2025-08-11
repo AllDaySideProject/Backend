@@ -34,6 +34,7 @@ public class MenuServiceImpl implements MenuService {
         );
         if (menus.isEmpty()) {throw new MenuNotFoundException();}
 
+        // 중복 메뉴 제거
         Map<String, Menu> uniqueMenus = new LinkedHashMap<>();
         for (Menu menu : menus) {
             uniqueMenus.putIfAbsent(menu.getName(), menu);
