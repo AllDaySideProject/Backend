@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.Centralthon.global.util.geo.GeoUtils.calculateBoundingBox;
 
@@ -32,7 +34,12 @@ public class MenuServiceImpl implements MenuService {
         );
         if (menus.isEmpty()) {throw new MenuNotFoundException();}
 
-        return menus.stream()
+        Map<String, Menu> uniqueMenus = new LinkedHashMap<>();
+        for (Menu menu : menus) {
+            uniqueMenus.putIfAbsent(menu.getName(), menu);
+        }
+
+        return uniqueMenus.values().stream()
                 .map(NearbyMenusRes::from)
                 .toList();
     }
