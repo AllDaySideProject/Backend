@@ -10,7 +10,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
-    @Query(value = "SELECT m.* FROM menus m JOIN stores s ON m.store_id = s.id WHERE " +
+    @Query(value = "SELECT m.* FROM menus m JOIN stores s ON m.store_id = s.store_id WHERE " +
             "s.latitude BETWEEN :minLat AND :maxLat " +
             "AND s.longitude BETWEEN :minLng AND :maxLng " +
             "AND ST_Distance_Sphere(POINT(s.longitude, s.latitude), POINT(:lng, :lat)) <= 2000 " +

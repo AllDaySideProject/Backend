@@ -7,6 +7,7 @@ import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
 import com.example.Centralthon.global.util.geo.BoundingBox;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -21,6 +22,7 @@ public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
 
     @Override
+    @Transactional(readOnly=true)
     public List<NearbyMenusRes> nearbyMenus(double latitude, double longitude) {
         LocalDateTime now = LocalDateTime.now();
 
@@ -32,7 +34,6 @@ public class MenuServiceImpl implements MenuService {
                 latitude, longitude, now,
                 bbox.minLat(), bbox.maxLat(), bbox.minLng(), bbox.maxLng()
         );
-        if (menus.isEmpty()) {throw new MenuNotFoundException();}
 
         // 중복 메뉴 제거
         Map<String, Menu> uniqueMenus = new LinkedHashMap<>();

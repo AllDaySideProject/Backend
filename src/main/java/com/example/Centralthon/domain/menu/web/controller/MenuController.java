@@ -19,13 +19,12 @@ public class MenuController {
 
     //맞춤 추천용 메뉴 목록 조회
     @GetMapping("")
-    public ResponseEntity<SuccessResponse<Map<String, Object>>> nearbyMenus(
+    public ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> nearbyMenus(
             @RequestParam("lat") Double lat,
             @RequestParam("lng") Double lng) {
 
         List<NearbyMenusRes> menus = menuService.nearbyMenus(lat,lng);
-        Map<String, Object> data = Map.of("menus", menus);
 
-        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(data));
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menus));
     }
 }
