@@ -1,7 +1,6 @@
 package com.example.Centralthon.domain.menu.service;
 
 import com.example.Centralthon.domain.menu.entity.Menu;
-import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
 import com.example.Centralthon.global.util.geo.BoundingBox;
