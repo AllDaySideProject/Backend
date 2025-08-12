@@ -1,17 +1,16 @@
 package com.example.Centralthon.domain.menu.web.dto;
 
 import com.example.Centralthon.domain.menu.entity.Menu;
+import com.example.Centralthon.domain.menu.entity.enums.MenuCategory;
 
 public record NearbyMenusRes(
-        Long id,
         String name,
-        String category
+        MenuCategory category
 ) {
     public static NearbyMenusRes from(Menu m) {
         return new NearbyMenusRes(
-                m.getId(),
                 m.getName(),
-                m.getCategory().getCategory()
+                m.getCategory()
         );
     }
 }

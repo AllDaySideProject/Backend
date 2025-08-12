@@ -19,17 +19,19 @@ import java.util.List;
 public class Store extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="store_id")
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
-    private String address;
-
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StoreCategory category;
 
+    @Column(nullable = false)
     private double latitude;
+    @Column(nullable = false)
     private double longitude;
 
     @OneToMany(mappedBy ="store", cascade = CascadeType.ALL, orphanRemoval = true)

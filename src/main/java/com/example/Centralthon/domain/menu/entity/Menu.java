@@ -18,21 +18,29 @@ import java.time.LocalDateTime;
 public class Menu extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="menu_id")
     private Long id;
 
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private int costPrice;
+
+    @Column(nullable = false)
     private int salePrice;
+
+    @Column(nullable = false)
     private int quantity;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MenuCategory category;
 
+    @Column(nullable = false)
     private LocalDateTime deadline;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 }
