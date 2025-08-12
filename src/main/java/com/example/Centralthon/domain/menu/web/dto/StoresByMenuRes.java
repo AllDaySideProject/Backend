@@ -4,15 +4,15 @@ import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.domain.menu.entity.enums.MenuCategory;
 import com.example.Centralthon.domain.store.entity.Store;
 
-public record StoresByMenu(
+public record StoresByMenuRes(
         String storeName,
         double distance,
         int salePrice,
         int quantity
 ) {
-    public static StoresByMenu from(Menu menu, double distance) {
+    public static StoresByMenuRes from(Menu menu, double distance) {
         Store store = menu.getStore();
-        return new StoresByMenu(
+        return new StoresByMenuRes(
                 store.getName(),
                 distance,
                 menu.getSalePrice(),

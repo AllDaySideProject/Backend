@@ -4,7 +4,7 @@ import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
-import com.example.Centralthon.domain.menu.web.dto.StoresByMenu;
+import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
 import com.example.Centralthon.domain.store.entity.Store;
 import com.example.Centralthon.global.util.geo.BoundingBox;
 import com.example.Centralthon.global.util.geo.GeoUtils;
@@ -59,7 +59,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     @Transactional(readOnly=true)
-    public List<StoresByMenu> storesByMenu(String name, double lat, double lng) {
+    public List<StoresByMenuRes> storesByMenu(String name, double lat, double lng) {
         List<Menu> menus = findMenusWithinRadius(lat, lng);
 
         // 이름이 일치하는 메뉴만 필터링, 가격 오름차순 정렬
@@ -69,7 +69,7 @@ public class MenuServiceImpl implements MenuService {
                 .toList();
 
         return filtered.stream()
-                .map(menu -> StoresByMenu.from(
+                .map(menu -> StoresByMenuRes.from(
                         menu,
                         GeoUtils.calculateDistance(lat, lng, menu.getStore().getLatitude(), menu.getStore().getLongitude())
                 ))
