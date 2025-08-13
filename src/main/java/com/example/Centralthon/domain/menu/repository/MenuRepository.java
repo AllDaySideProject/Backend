@@ -26,4 +26,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             double maxLng
     );
 
+
+
 }
