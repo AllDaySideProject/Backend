@@ -1,9 +1,9 @@
 package com.example.Centralthon.domain.menu.service;
 
 import com.example.Centralthon.domain.menu.entity.Menu;
+import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
-import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
-import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
+import com.example.Centralthon.domain.menu.web.dto.*;
 import com.example.Centralthon.domain.store.entity.Store;
 import com.example.Centralthon.global.util.geo.BoundingBox;
 import com.example.Centralthon.global.util.geo.GeoUtils;
@@ -12,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.Centralthon.global.util.geo.GeoUtils.calculateBoundingBox;
 import static com.example.Centralthon.global.util.geo.GeoUtils.calculateDistance;
@@ -72,6 +70,21 @@ public class MenuServiceImpl implements MenuService {
                         menu,
                         GeoUtils.calculateDistance(lat, lng, menu.getStore().getLatitude(), menu.getStore().getLongitude())
                 ))
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public List<MenuDetailsRes> details(MenuDetailsListReq menus) {
+        Map<Long, Integer> menuMap = menus.getMenus().stream()
+                .collect(Collectors.toMap(MenuDetailsReq::getMenuId, MenuDetailsReq::getQuantity));
+
+        List<Menu> menuList = menuRepository.findAllById(menuMap.keySet());
+
+        if (menuList.isEmpty()) {throw new MenuNotFoundException();}
+
+        return menuList.stream()
+                .map(menu -> MenuDetailsRes.from(menu, menuMap.get(menu.getId())))
                 .toList();
     }
 }
