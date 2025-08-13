@@ -1,8 +1,7 @@
 package com.example.Centralthon.domain.menu.service;
 
 import com.example.Centralthon.domain.menu.web.dto.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public interface MenuService {
@@ -10,5 +9,5 @@ public interface MenuService {
 
     List<StoresByMenuRes> storesByMenu(String name, double lat, double lng);
 
-    List<MenuDetailsRes> details( MenuDetailsListReq menus);
+    List<MenuDetailsRes> details(MenuIdsReq menus);
 }

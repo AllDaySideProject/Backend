@@ -2,7 +2,9 @@ package com.example.Centralthon.domain.menu.web.dto;
 
 import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.domain.menu.entity.enums.MenuCategory;
-import com.example.Centralthon.domain.store.entity.Store;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public record MenuDetailsRes(
         long menuId,
@@ -10,19 +12,25 @@ public record MenuDetailsRes(
         MenuCategory category,
         int costPrice,
         int salePrice,
-        String storeName,
-        int quantity
+        int salePercent,
+        String storeName
 ) {
-    public static MenuDetailsRes from(Menu menu, int quantity) {
-        Store store = menu.getStore();
+    public static MenuDetailsRes from(Menu menu) {
         return new MenuDetailsRes(
                 menu.getId(),
                 menu.getName(),
                 menu.getCategory(),
                 menu.getCostPrice(),
                 menu.getSalePrice(),
-                store.getName(),
-                quantity
+                calculateDiscount(menu.getCostPrice(), menu.getSalePrice()),
+                menu.getStore().getName()
         );
+    }
+
+    private static int calculateDiscount(int cost, int sale) {
+        return BigDecimal.valueOf(cost - sale)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(BigDecimal.valueOf(cost), 0, RoundingMode.HALF_UP)
+                .intValue();
     }
 }

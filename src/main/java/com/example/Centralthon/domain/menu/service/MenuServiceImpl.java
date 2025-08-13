@@ -75,16 +75,13 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     @Transactional(readOnly=true)
-    public List<MenuDetailsRes> details(MenuDetailsListReq menus) {
-        Map<Long, Integer> menuMap = menus.getMenus().stream()
-                .collect(Collectors.toMap(MenuDetailsReq::getMenuId, MenuDetailsReq::getQuantity));
-
-        List<Menu> menuList = menuRepository.findAllById(menuMap.keySet());
+    public List<MenuDetailsRes> details(MenuIdsReq menus) {
+        List<Menu> menuList = menuRepository.findAllById(menus.getMenuIds());
 
         if (menuList.isEmpty()) {throw new MenuNotFoundException();}
 
         return menuList.stream()
-                .map(menu -> MenuDetailsRes.from(menu, menuMap.get(menu.getId())))
+                .map(menu -> MenuDetailsRes.from(menu))
                 .toList();
     }
 }

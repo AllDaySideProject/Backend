@@ -43,7 +43,7 @@ public class MenuController {
 
     //메뉴 상세 조회
     @PostMapping("/details")
-    public ResponseEntity<SuccessResponse<List<MenuDetailsRes>>> details(@RequestBody @Valid MenuDetailsListReq menus){
+    public ResponseEntity<SuccessResponse<List<MenuDetailsRes>>> details(@RequestBody @Valid MenuIdsReq menus){
         List<MenuDetailsRes> menuList = menuService.details(menus);
 
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menuList));
