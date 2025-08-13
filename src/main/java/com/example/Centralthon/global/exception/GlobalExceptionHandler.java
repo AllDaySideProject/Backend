@@ -98,7 +98,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
 
-
     // @RequestParam 누락 시 발생
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse<?>> handleMissingRequestParam(MissingServletRequestParameterException e) {
@@ -106,7 +105,6 @@ public class GlobalExceptionHandler {
         ErrorResponse<?> errorResponse = ErrorResponse.of(ErrorResponseCode.INVALID_HTTP_MESSAGE_PARAMETER, e.getParameterName() + " 값은 필수입니다.");
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
-
 
     // 나머지 예외 처리
     @ExceptionHandler(Exception.class)

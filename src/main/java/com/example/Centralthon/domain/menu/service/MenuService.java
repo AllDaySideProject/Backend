@@ -2,6 +2,8 @@ package com.example.Centralthon.domain.menu.service;
 
 import com.example.Centralthon.domain.menu.web.dto.*;
 import jakarta.validation.Valid;
+import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
+import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 

@@ -1,9 +1,15 @@
 package com.example.Centralthon.domain.menu.web.controller;
 
 import com.example.Centralthon.domain.menu.service.MenuService;
+
 import com.example.Centralthon.domain.menu.web.dto.*;
 import com.example.Centralthon.global.response.SuccessResponse;
 import jakarta.validation.Valid;
+
+import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
+import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
+import com.example.Centralthon.global.response.SuccessResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
