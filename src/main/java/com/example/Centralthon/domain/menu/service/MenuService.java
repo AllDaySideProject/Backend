@@ -1,7 +1,8 @@
 package com.example.Centralthon.domain.menu.service;
 
 import com.example.Centralthon.domain.menu.web.dto.*;
-
+import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
+import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
 import java.util.List;
 
 public interface MenuService {
