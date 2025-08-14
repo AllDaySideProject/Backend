@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +25,5 @@ public class Order extends BaseEntity {
     private int price;
 
     @Column(nullable = false)
-    private Boolean isPickedUp;
+    private boolean isPickedUp;
 }
