@@ -9,8 +9,8 @@ import com.example.Centralthon.domain.order.exception.CodeNotCreatedException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
 import com.example.Centralthon.domain.order.web.dto.OrderItemListReq;
-import com.example.Centralthon.domain.order.web.dto.OrderReq;
-import com.example.Centralthon.domain.order.web.dto.OrderRes;
+import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
+import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderRes orderMenus(OrderReq orderReq) {
+    public CreateOrderRes orderMenus(CreateOrderReq orderReq) {
         Map<Long, Integer> orderList = new HashMap<>();
 
         for (OrderItemListReq orderItemListReq : orderReq.getItems()) {
@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderItemRepository.saveAll(orderItemList);
 
-        return OrderRes.from(order);
+        return CreateOrderRes.from(order);
     }
 
     private Order createOrderWithUniqueCode(int totalPrice) {
