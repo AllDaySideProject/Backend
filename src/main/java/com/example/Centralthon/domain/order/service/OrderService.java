@@ -6,5 +6,5 @@ import com.example.Centralthon.domain.order.web.dto.OrderRes;
 import java.util.List;
 
 public interface OrderService {
-    OrderRes orderMenus(List<OrderReq> orderReqList);
+    OrderRes orderMenus(OrderReq orderReq);
 }

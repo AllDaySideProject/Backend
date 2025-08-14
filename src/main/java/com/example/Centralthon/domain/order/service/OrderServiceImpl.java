@@ -8,6 +8,7 @@ import com.example.Centralthon.domain.order.entity.OrderItem;
 import com.example.Centralthon.domain.order.exception.CodeNotCreatedException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
+import com.example.Centralthon.domain.order.web.dto.OrderItemListReq;
 import com.example.Centralthon.domain.order.web.dto.OrderReq;
 import com.example.Centralthon.domain.order.web.dto.OrderRes;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +37,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderRes orderMenus(List<OrderReq> orderReqList) {
+    public OrderRes orderMenus(OrderReq orderReq) {
         Map<Long, Integer> orderList = new HashMap<>();
 
-        for (OrderReq orderReq : orderReqList) {
-            orderList.merge(orderReq.getMenuId(), orderReq.getCount(), Integer::sum);
+        for (OrderItemListReq orderItemListReq : orderReq.getItems()) {
+            orderList.merge(orderItemListReq.getMenuId(), orderItemListReq.getCount(), Integer::sum);
         }
 
         // 메뉴 id가 없을 경우 -> MenuNotFoundException
