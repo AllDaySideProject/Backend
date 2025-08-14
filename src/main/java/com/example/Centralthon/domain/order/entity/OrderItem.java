@@ -29,4 +29,12 @@ public class OrderItem extends BaseEntity {
 
     @Column(nullable = false)
     private int quantity;
+
+    public static OrderItem toEntity(Order order, Menu menu, int quantity) {
+        return OrderItem.builder()
+                .order(order)
+                .menu(menu)
+                .quantity(quantity)
+                .build();
+    }
 }

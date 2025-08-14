@@ -1,6 +1,5 @@
 package com.example.Centralthon.domain.order.entity;
 
-import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,12 +17,20 @@ public class Order extends BaseEntity {
     @Column(name="order_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "pick_up_code", nullable = false, unique = true, length = 6)
     private String pickUpCode;
 
     @Column(nullable = false)
     private int price;
 
-    @Column(nullable = false)
-    private boolean isPickedUp;
+    @Column(name = "is_picked_up", nullable = false)
+    private boolean pickedUp;
+
+    public static Order toEntity(String pickUpCode, int price){
+        return Order.builder()
+                .pickUpCode(pickUpCode)
+                .price(price)
+                .pickedUp(false)
+                .build();
+    }
 }
