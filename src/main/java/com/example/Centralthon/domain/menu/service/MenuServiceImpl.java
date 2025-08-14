@@ -3,8 +3,7 @@ package com.example.Centralthon.domain.menu.service;
 import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
-import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
-import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
+import com.example.Centralthon.domain.menu.web.dto.*;
 import com.example.Centralthon.domain.store.entity.Store;
 import com.example.Centralthon.global.util.geo.BoundingBox;
 import com.example.Centralthon.global.util.geo.GeoUtils;
@@ -13,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -75,4 +76,17 @@ public class MenuServiceImpl implements MenuService {
                 ))
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly=true)
+    public List<MenuDetailsRes> details(MenuIdsReq menus) {
+        List<Menu> menuList = menuRepository.findAllById(menus.getMenuIds());
+
+        if (menuList.isEmpty()) {throw new MenuNotFoundException();}
+
+        return menuList.stream()
+                .map(menu -> MenuDetailsRes.from(menu))
+                .toList();
+    }
+
 }
