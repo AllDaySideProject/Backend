@@ -5,12 +5,17 @@ import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.order.entity.Order;
 import com.example.Centralthon.domain.order.entity.OrderItem;
+import com.example.Centralthon.domain.order.exception.CodeNotCreatedException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
 import com.example.Centralthon.domain.order.web.dto.OrderReq;
 import com.example.Centralthon.domain.order.web.dto.OrderRes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -22,6 +27,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    @Lazy @Autowired
+    private OrderServiceImpl selfProxy;
+
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
@@ -47,11 +55,7 @@ public class OrderServiceImpl implements OrderService {
             totalPrice = Math.addExact(totalPrice, Math.multiplyExact(menu.getSalePrice(), orderList.get(menu.getId())));
         }
 
-        // 픽업 코드 생성
-        String code = generatePickUpCode();
-
-        Order order = Order.toEntity(code, totalPrice);
-        orderRepository.save(order);
+        Order order = createOrderWithUniqueCode(totalPrice);
 
         List<OrderItem> orderItemList = new ArrayList<>();
         for(Menu menu : menuList) {
@@ -63,13 +67,37 @@ public class OrderServiceImpl implements OrderService {
         return OrderRes.from(order);
     }
 
+    private Order createOrderWithUniqueCode(int totalPrice) {
+        for(int i = 0; i < 10; i++) {
+            String code = generatePickUpCode();
+            try{
+                // 프록시를 적용해주지 않으면, this.saveOrder가 실행되어 트랙잭션이 실행되지 않음
+                return selfProxy.saveOrder(code, totalPrice);
+            } catch (DataIntegrityViolationException e) {
+                // 다음 실행 진행
+            }
+        }
+        throw new CodeNotCreatedException();
+    }
+
+    /**
+     * 같은 트랙잭션에서 실패하면 rollback-only 상태로 인해 정상 커밋이 불가능하므로,
+     * 새 트랜잭션을 열어 새로운 픽업 코드를 저장하도록 시도
+     * -> 새 트랜잭션을 열기 위해 @Transactional(propagation = Propagation.REQUIRES_NEW) 사용
+     * -> @Transactional(propagation = Propagation.REQUIRES_NEW)는 기존 트랜잭션을 중지시키고, 새 트랜잭션 시작
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Order saveOrder(String code, int totalPrice){
+        Order order = Order.toEntity(code, totalPrice);
+        return orderRepository.save(order);
+    }
+
     /**
      * 픽업 코드(영문 두자리 + 숫자 네자리) 생성 메서드
      */
     private String generatePickUpCode() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         char[] codeArray = new char[6];
-
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String number = "0123456789";
 
