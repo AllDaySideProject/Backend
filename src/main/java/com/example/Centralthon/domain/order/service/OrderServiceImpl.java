@@ -8,9 +8,9 @@ import com.example.Centralthon.domain.order.entity.OrderItem;
 import com.example.Centralthon.domain.order.exception.CodeNotCreatedException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
-import com.example.Centralthon.domain.order.web.dto.OrderItemListReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
+import com.example.Centralthon.domain.order.web.dto.OrderItemListReq;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -60,13 +60,15 @@ public class OrderServiceImpl implements OrderService {
         Order order = createOrderWithUniqueCode(totalPrice);
 
         List<OrderItem> orderItemList = new ArrayList<>();
+        List<Long> storeIdList = new ArrayList<>();
         for(Menu menu : menuList) {
             OrderItem orderItem = OrderItem.toEntity(order, menu, orderList.get(menu.getId()));
             orderItemList.add(orderItem);
+            if(!storeIdList.contains(menu.getStore().getId())) storeIdList.add(menu.getStore().getId());
         }
         orderItemRepository.saveAll(orderItemList);
 
-        return CreateOrderRes.from(order);
+        return CreateOrderRes.of(order, storeIdList);
     }
 
     private Order createOrderWithUniqueCode(int totalPrice) {
