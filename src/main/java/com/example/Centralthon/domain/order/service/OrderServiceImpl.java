@@ -5,9 +5,11 @@ import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.order.entity.Order;
 import com.example.Centralthon.domain.order.entity.OrderItem;
-import com.example.Centralthon.domain.order.exception.CodeNotCreatedException;
+import com.example.Centralthon.domain.order.exception.OrderCodeNotCreatedException;
+import com.example.Centralthon.domain.order.exception.OrderNotFoundException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
+import com.example.Centralthon.domain.order.web.dto.CompleteOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 import com.example.Centralthon.domain.order.web.dto.OrderItemListReq;
@@ -71,6 +73,14 @@ public class OrderServiceImpl implements OrderService {
         return CreateOrderRes.of(order, storeIdList);
     }
 
+    @Override
+    @Transactional
+    public void completePickUp(CompleteOrderReq completeOrderReq){
+        Order order = orderRepository.findByPickUpCode(completeOrderReq.getCode()).orElseThrow(OrderNotFoundException::new);
+        order.completeOrder();
+    }
+
+
     private Order createOrderWithUniqueCode(int totalPrice) {
         for(int i = 0; i < 10; i++) {
             String code = generatePickUpCode();
@@ -81,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
                 // 다음 실행 진행
             }
         }
-        throw new CodeNotCreatedException();
+        throw new OrderCodeNotCreatedException();
     }
 
     /**
