@@ -6,7 +6,6 @@ import com.example.Centralthon.domain.order.web.dto.OrderRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import com.example.Centralthon.global.response.code.SuccessResponseCode;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
