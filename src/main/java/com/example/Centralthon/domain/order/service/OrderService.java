@@ -1,10 +1,8 @@
 package com.example.Centralthon.domain.order.service;
 
-import com.example.Centralthon.domain.order.web.dto.OrderReq;
-import com.example.Centralthon.domain.order.web.dto.OrderRes;
-
-import java.util.List;
+import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
+import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 
 public interface OrderService {
-    OrderRes orderMenus(OrderReq orderReq);
+    CreateOrderRes orderMenus(CreateOrderReq orderReq);
 }

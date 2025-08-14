@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class OrderReq {
+public class CreateOrderReq {
     @NotEmpty(message = "주문 항목은 빈 배열일 수 없습니다.")
     List<@Valid OrderItemListReq> items;
 }

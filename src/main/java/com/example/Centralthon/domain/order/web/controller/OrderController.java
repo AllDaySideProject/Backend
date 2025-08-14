@@ -1,8 +1,8 @@
 package com.example.Centralthon.domain.order.web.controller;
 
 import com.example.Centralthon.domain.order.service.OrderService;
-import com.example.Centralthon.domain.order.web.dto.OrderReq;
-import com.example.Centralthon.domain.order.web.dto.OrderRes;
+import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
+import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import com.example.Centralthon.global.response.code.SuccessResponseCode;
 import jakarta.validation.Valid;
@@ -18,8 +18,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<SuccessResponse<OrderRes>> createOrder(@RequestBody @Valid OrderReq orderReq) {
-        OrderRes orderRes = orderService.orderMenus(orderReq);
-        return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.of(orderRes, SuccessResponseCode.SUCCESS_CREATED));
+    public ResponseEntity<SuccessResponse<CreateOrderRes>> createOrder(@RequestBody @Valid CreateOrderReq orderReq) {
+        CreateOrderRes createOrderRes = orderService.orderMenus(orderReq);
+        return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.of(createOrderRes, SuccessResponseCode.SUCCESS_CREATED));
     }
 }
