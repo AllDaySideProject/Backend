@@ -34,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
+    @Override
     @Transactional
     public OrderRes orderMenus(List<OrderReq> orderReqList) {
         Map<Long, Integer> orderList = new HashMap<>();
