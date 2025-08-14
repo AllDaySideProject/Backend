@@ -6,6 +6,7 @@ import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.order.entity.Order;
 import com.example.Centralthon.domain.order.entity.OrderItem;
 import com.example.Centralthon.domain.order.exception.OrderCodeNotCreatedException;
+import com.example.Centralthon.domain.order.exception.OrderExpiredException;
 import com.example.Centralthon.domain.order.exception.OrderNotFoundException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
@@ -77,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void completePickUp(CompleteOrderReq completeOrderReq){
         Order order = orderRepository.findByPickUpCode(completeOrderReq.getCode()).orElseThrow(OrderNotFoundException::new);
+        if(order.isPickedUp()) throw new OrderExpiredException();
         order.completeOrder();
     }
 
