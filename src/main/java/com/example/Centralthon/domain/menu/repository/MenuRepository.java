@@ -10,6 +10,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, Long> {
+    // BoundingBox 안에 존재하는 모든 메뉴 반환
     @Query(value = """
         SELECT m.* FROM menus m
         JOIN stores s ON m.store_id = s.store_id
@@ -27,6 +28,14 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             @Param("maxLng") double maxLng
     );
 
-
+    // 해당 가게에서 판매 하는 메뉴 반환
+    @Query("""
+    SELECT m FROM Menu m
+    JOIN FETCH m.store s
+    WHERE s.id = :storeId AND m.quantity > 0 AND m.deadline > :now
+    """)
+    List<Menu> findByStoreId(
+            @Param("storeId") Long storeId,
+            @Param("now") LocalDateTime now);
 
 }

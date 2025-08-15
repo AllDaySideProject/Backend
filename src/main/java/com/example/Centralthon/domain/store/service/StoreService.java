@@ -8,5 +8,5 @@ import java.util.List;
 public interface StoreService {
     List<NearbyStoresRes> nearbyStores(double lat, double lng);
 
-    StoreMenusRes getStoreMenus(Long storeId);
+    StoreMenusRes getStoreMenus(Long storeId, double lat, double lng);
 }

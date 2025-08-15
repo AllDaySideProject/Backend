@@ -1,10 +1,15 @@
 package com.example.Centralthon.domain.store.service;
 
+import com.example.Centralthon.domain.menu.entity.Menu;
+import com.example.Centralthon.domain.menu.repository.MenuRepository;
+import com.example.Centralthon.domain.menu.web.dto.MenuItemRes;
 import com.example.Centralthon.domain.store.entity.Store;
 import com.example.Centralthon.domain.store.repository.StoreRepository;
 import com.example.Centralthon.domain.store.web.dto.NearbyStoresRes;
 import com.example.Centralthon.domain.store.web.dto.StoreMenusRes;
+import com.example.Centralthon.domain.store.exception.StoreNotFoundException;
 import com.example.Centralthon.global.util.geo.BoundingBox;
+import com.example.Centralthon.global.util.geo.GeoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +23,7 @@ import static com.example.Centralthon.global.util.geo.GeoUtils.calculateBounding
 @RequiredArgsConstructor
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
+    private final MenuRepository menuRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -36,7 +42,27 @@ public class StoreServiceImpl implements StoreService {
     }
 
     @Override
-    public StoreMenusRes getStoreMenus(Long storeId) {
-        return null;
+    @Transactional(readOnly = true)
+    public StoreMenusRes getStoreMenus(Long storeId, double lat, double lng) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 가게 id가 없을 경우 -> StoreNotFoundException
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(StoreNotFoundException::new);
+
+        // 사용자와 가게 간의 거리 구하기
+        double distance = GeoUtils.calculateDistance(lat, lng, store.getLatitude(), store.getLongitude());
+
+        List<Menu> menus = menuRepository.findByStoreId(storeId, now);
+
+        List<MenuItemRes> menuItems = menus.stream()
+                .map(MenuItemRes::from)
+                .toList();
+
+        return StoreMenusRes.from(
+                store,
+                distance,
+                menuItems
+        );
     }
 }

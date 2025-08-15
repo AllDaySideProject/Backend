@@ -29,11 +29,13 @@ public class StoreController {
     }
 
     // 가게 판매 메뉴 목록 조회
-    @GetMapping("/{storeId}")
+    @GetMapping("/{storeId}/menus")
     public ResponseEntity<SuccessResponse<StoreMenusRes>> getStoreMenus(
-            @PathVariable Long storeId){
+            @PathVariable Long storeId,
+            @RequestParam("lat") Double lat,
+            @RequestParam("lng") Double lng){
 
-        StoreMenusRes menus = storeService.getStoreMenus(storeId);
+        StoreMenusRes menus = storeService.getStoreMenus(storeId, lat, lng);
 
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menus));
     }
