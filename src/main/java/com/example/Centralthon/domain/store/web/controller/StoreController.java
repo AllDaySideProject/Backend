@@ -2,14 +2,13 @@ package com.example.Centralthon.domain.store.web.controller;
 
 import com.example.Centralthon.domain.store.service.StoreService;
 import com.example.Centralthon.domain.store.web.dto.NearbyStoresRes;
+import com.example.Centralthon.domain.store.web.dto.StoreMenusRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -28,4 +27,15 @@ public class StoreController {
 
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(stores));
     }
+
+    // 가게 판매 메뉴 목록 조회
+    @GetMapping("/{storeId}")
+    public ResponseEntity<SuccessResponse<StoreMenusRes>> getStoreMenus(
+            @PathVariable Long storeId){
+
+        StoreMenusRes menus = storeService.getStoreMenus(storeId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menus));
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.Centralthon.domain.store.service;
 import com.example.Centralthon.domain.store.entity.Store;
 import com.example.Centralthon.domain.store.repository.StoreRepository;
 import com.example.Centralthon.domain.store.web.dto.NearbyStoresRes;
+import com.example.Centralthon.domain.store.web.dto.StoreMenusRes;
 import com.example.Centralthon.global.util.geo.BoundingBox;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,10 @@ public class StoreServiceImpl implements StoreService {
         return stores.stream()
                 .map(store -> NearbyStoresRes.from(store))
                 .toList();
+    }
+
+    @Override
+    public StoreMenusRes getStoreMenus(Long storeId) {
+        return null;
     }
 }
