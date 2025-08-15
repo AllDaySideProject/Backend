@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.time.LocalDateTime;
 @Repository
@@ -25,6 +26,12 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             double minLng,
             double maxLng
     );
+
+    /**
+     * ids에 포함된 Menu와 연관된 Store를 한번에 가져옴
+     */
+    @Query(value = "SELECT m from Menu m join fetch m.store where m.id in :ids")
+    List<Menu> findAllByIdWithStore(@Param("ids") Collection<Long> ids);
 
 
 
