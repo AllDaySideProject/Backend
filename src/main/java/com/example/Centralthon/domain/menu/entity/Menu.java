@@ -30,6 +30,7 @@ public class Menu extends BaseEntity {
     @Column(name = "sale_price", nullable = false)
     private int salePrice;
 
+    @Setter
     @Column(nullable = false)
     private int quantity;
 

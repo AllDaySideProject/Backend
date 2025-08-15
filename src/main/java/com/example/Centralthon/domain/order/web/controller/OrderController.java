@@ -1,6 +1,7 @@
 package com.example.Centralthon.domain.order.web.controller;
 
 import com.example.Centralthon.domain.order.service.OrderService;
+import com.example.Centralthon.domain.order.web.dto.CompleteOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 import com.example.Centralthon.global.response.SuccessResponse;
@@ -21,5 +22,11 @@ public class OrderController {
     public ResponseEntity<SuccessResponse<CreateOrderRes>> createOrder(@RequestBody @Valid CreateOrderReq orderReq) {
         CreateOrderRes createOrderRes = orderService.orderMenus(orderReq);
         return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.of(createOrderRes, SuccessResponseCode.SUCCESS_CREATED));
+    }
+
+    @PutMapping("/complete")
+    public ResponseEntity<SuccessResponse<?>> completePickUp(@RequestBody @Valid CompleteOrderReq completeOrderReq){
+        orderService.completePickUp(completeOrderReq);
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.empty());
     }
 }

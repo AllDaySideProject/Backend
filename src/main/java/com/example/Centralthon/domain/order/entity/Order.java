@@ -33,4 +33,8 @@ public class Order extends BaseEntity {
                 .pickedUp(false)
                 .build();
     }
+
+    public void completeOrder(){
+        this.pickedUp = true;
+    }
 }
