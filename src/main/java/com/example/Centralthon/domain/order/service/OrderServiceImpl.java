@@ -1,13 +1,18 @@
 package com.example.Centralthon.domain.order.service;
 
 import com.example.Centralthon.domain.menu.entity.Menu;
+import com.example.Centralthon.domain.menu.exception.MenuExpiredException;
 import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
+import com.example.Centralthon.domain.menu.exception.MenuOutOfStockException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.order.entity.Order;
 import com.example.Centralthon.domain.order.entity.OrderItem;
-import com.example.Centralthon.domain.order.exception.CodeNotCreatedException;
+import com.example.Centralthon.domain.order.exception.OrderCodeNotCreatedException;
+import com.example.Centralthon.domain.order.exception.OrderExpiredException;
+import com.example.Centralthon.domain.order.exception.OrderNotFoundException;
 import com.example.Centralthon.domain.order.repository.OrderItemRepository;
 import com.example.Centralthon.domain.order.repository.OrderRepository;
+import com.example.Centralthon.domain.order.web.dto.CompleteOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderReq;
 import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 import com.example.Centralthon.domain.order.web.dto.OrderItemListReq;
@@ -19,10 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -45,43 +48,47 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 메뉴 id가 없을 경우 -> MenuNotFoundException
-        List<Menu> menuList = menuRepository.findAllById(orderList.keySet());
-        if(menuList.size() != orderList.keySet().size()) {
-            throw new MenuNotFoundException();
-        }
+        List<Menu> menuList = menuRepository.findAllByIdWithStore(orderList.keySet());
+        if(menuList.size() != orderList.keySet().size()) throw new MenuNotFoundException();
 
         // 최종 결제 금액 계산
         int totalPrice = 0;
+        LocalDateTime now = LocalDateTime.now();
         for (Menu menu : menuList) {
+            // 메뉴 마감 시간이 지났을 경우 -> MenuExpiredException
+            if(menu.getDeadline().isBefore(now)) throw new MenuExpiredException();
+
+            // 메뉴 재고가 부족할 경우 -> MenuOutOfStockException
+            if(menu.getQuantity()<orderList.get(menu.getId())) throw new MenuOutOfStockException();
+
             // 오버플로우 방지를 위한 addExact, multiplyExact 사용
             totalPrice = Math.addExact(totalPrice, Math.multiplyExact(menu.getSalePrice(), orderList.get(menu.getId())));
         }
 
+        // 픽업 코드를 통해 주문 생성
         Order order = createOrderWithUniqueCode(totalPrice);
 
         List<OrderItem> orderItemList = new ArrayList<>();
-        List<Long> storeIdList = new ArrayList<>();
+        Set<Long> storeIds = new LinkedHashSet<>();
         for(Menu menu : menuList) {
-            OrderItem orderItem = OrderItem.toEntity(order, menu, orderList.get(menu.getId()));
-            orderItemList.add(orderItem);
-            if(!storeIdList.contains(menu.getStore().getId())) storeIdList.add(menu.getStore().getId());
+            int count = orderList.get(menu.getId());
+            orderItemList.add(OrderItem.toEntity(order, menu, count));
+            storeIds.add(menu.getStore().getId()); // fetch join : 추가 쿼리 없음
+
+            // 재고 차감
+            menu.setQuantity(menu.getQuantity()-count);
         }
         orderItemRepository.saveAll(orderItemList);
 
-        return CreateOrderRes.of(order, storeIdList);
+        return CreateOrderRes.of(order, new ArrayList<>(storeIds));
     }
 
-    private Order createOrderWithUniqueCode(int totalPrice) {
-        for(int i = 0; i < 10; i++) {
-            String code = generatePickUpCode();
-            try{
-                // 프록시를 적용해주지 않으면, this.saveOrder가 실행되어 트랙잭션이 실행되지 않음
-                return selfProxy.saveOrder(code, totalPrice);
-            } catch (DataIntegrityViolationException e) {
-                // 다음 실행 진행
-            }
-        }
-        throw new CodeNotCreatedException();
+    @Override
+    @Transactional
+    public void completePickUp(CompleteOrderReq completeOrderReq){
+        Order order = orderRepository.findByPickUpCode(completeOrderReq.getCode()).orElseThrow(OrderNotFoundException::new);
+        if(order.isPickedUp()) throw new OrderExpiredException();
+        order.completeOrder();
     }
 
     /**
@@ -94,6 +101,19 @@ public class OrderServiceImpl implements OrderService {
     public Order saveOrder(String code, int totalPrice){
         Order order = Order.toEntity(code, totalPrice);
         return orderRepository.save(order);
+    }
+
+    private Order createOrderWithUniqueCode(int totalPrice) {
+        for(int i = 0; i < 10; i++) {
+            String code = generatePickUpCode();
+            try{
+                // 프록시를 적용해주지 않으면, this.saveOrder가 실행되어 트랙잭션이 실행되지 않음
+                return selfProxy.saveOrder(code, totalPrice);
+            } catch (DataIntegrityViolationException e) {
+                // 다음 실행 진행
+            }
+        }
+        throw new OrderCodeNotCreatedException();
     }
 
     /**
