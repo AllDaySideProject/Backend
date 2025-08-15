@@ -24,10 +24,10 @@ public class Menu extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "cost_price", nullable = false)
     private int costPrice;
 
-    @Column(nullable = false)
+    @Column(name = "sale_price", nullable = false)
     private int salePrice;
 
     @Column(nullable = false)

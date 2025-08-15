@@ -9,5 +9,5 @@ public enum MenuCategory {
     BRAISED,
     SEASONED,
     STIR_FRY,
-    GRILLED;
+    STEAMED;
 }
