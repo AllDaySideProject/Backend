@@ -15,16 +15,18 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/orders")
-public class OrderController {
+public class OrderController implements OrderApi {
     private final OrderService orderService;
 
     @PostMapping
+    @Override
     public ResponseEntity<SuccessResponse<CreateOrderRes>> createOrder(@RequestBody @Valid CreateOrderReq orderReq) {
         CreateOrderRes createOrderRes = orderService.orderMenus(orderReq);
         return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.of(createOrderRes, SuccessResponseCode.SUCCESS_CREATED));
     }
 
     @PutMapping("/complete")
+    @Override
     public ResponseEntity<SuccessResponse<?>> completePickUp(@RequestBody @Valid CompleteOrderReq completeOrderReq){
         orderService.completePickUp(completeOrderReq);
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.empty());
