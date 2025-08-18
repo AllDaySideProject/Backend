@@ -3,6 +3,7 @@ package com.example.Centralthon.domain.menu.web.controller;
 import com.example.Centralthon.domain.menu.service.MenuService;
 
 import com.example.Centralthon.domain.menu.web.dto.*;
+import com.example.Centralthon.domain.order.web.controller.OrderApi;
 import com.example.Centralthon.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 
@@ -21,11 +22,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/menus")
 @RequiredArgsConstructor
-public class MenuController {
+public class MenuController implements MenuApi {
     private final MenuService menuService;
 
     //맞춤 추천용 메뉴 목록 조회
     @GetMapping("")
+    @Override
     public ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> nearbyMenus(
             @RequestParam("lat") Double lat,
             @RequestParam("lng") Double lng) {
@@ -37,6 +39,7 @@ public class MenuController {
 
     //특정 메뉴를 판매 하는 가게 조회
     @GetMapping("/stores")
+    @Override
     public ResponseEntity<SuccessResponse<List<StoresByMenuRes>>> storesByMenu(
             @RequestParam("name") String name,
             @RequestParam("lat") Double lat,
@@ -49,6 +52,7 @@ public class MenuController {
 
     //메뉴 상세 조회
     @PostMapping("/details")
+    @Override
     public ResponseEntity<SuccessResponse<List<MenuDetailsRes>>> details(@RequestBody @Valid MenuIdsReq menus){
         List<MenuDetailsRes> menuList = menuService.details(menus);
 
