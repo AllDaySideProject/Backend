@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/routes")
 @RequiredArgsConstructor
-public class RouteController {
+public class RouteController implements RouteApi {
     private final RouteService routeService;
 
     @PostMapping("/directions")
+    @Override
     public ResponseEntity<SuccessResponse<RouteRes>> findOptimalPath(@Valid @RequestBody RouteReq req) {
         RouteRes res = routeService.findOptimalPath(req);
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(res));
