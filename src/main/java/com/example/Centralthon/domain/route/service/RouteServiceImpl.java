@@ -32,11 +32,16 @@ public class RouteServiceImpl implements RouteService {
         List<Store> stores = storeRepository.findAllById(req.getStoreIds());
         if (stores.isEmpty()) throw new StoreNotFoundException();
 
-        List<LocationRes> nodes = new ArrayList<>();
+        List<LocationRes> nodes = new ArrayList<>(stores.size() + 1);
+        List<Long> indexToStoreId = new ArrayList<>(stores.size() + 1);
+
         nodes.add(new LocationRes(req.getUserLng(), req.getUserLat()));
-        nodes.addAll(stores.stream()
-                .map(s -> new LocationRes(s.getLongitude(), s.getLatitude()))
-                .toList());
+        indexToStoreId.add(null);
+
+        for (Store s : stores) {
+            nodes.add(new LocationRes(s.getLongitude(), s.getLatitude()));
+            indexToStoreId.add(s.getId());
+        }
 
         // 1) 보행자 경로 행렬/세그먼트 사전 계산
         PedMatrix pm = pedMatrixBuilder.build(nodes);
@@ -53,7 +58,7 @@ public class RouteServiceImpl implements RouteService {
         // 5) storeId 순서 변환
         List<Long> idOrder = order.stream()
                 .filter(i -> i != 0)
-                .map(i -> stores.get(i - 1).getId())
+                .map(indexToStoreId::get)
                 .toList();
 
         return new RouteRes(
