@@ -14,6 +14,9 @@ public class TmapPedestrianParser {
     public PedSegment parsePedestrian(Map<String, Object> pedRes) {
         long totalDistance = 0L;
         long totalDuration = 0L;
+        boolean gotDistance = false;
+        boolean gotDuration = false;
+
         List<LocationRes> path = new ArrayList<>();
 
         List<Map<String, Object>> features =
@@ -22,20 +25,18 @@ public class TmapPedestrianParser {
         // 1) 총거리/시간 추출
         for (Map<String, Object> f : features) {
             Map<String, Object> props = (Map<String, Object>) f.get("properties");
-            if (props == null) continue;
+            if(props != null){
+                if(!gotDistance){
+                    long candDist = asLong(props.get("totalDistance"));
+                    if (candDist > 0) { totalDistance = candDist; gotDistance = true; }
+                }
+                if(!gotDuration){
+                    long candTime = asLong(props.get("totalTime"));
+                    if (candTime > 0) { totalDuration = candTime; gotDuration = true; }
+                }
+            }
 
-            Object d = props.get("totalDistance");
-            long candDist = asLong(d);
-            if (candDist > 0) totalDistance = candDist;
-
-            Object t = props.get("totalTime");
-            long candTime = asLong(t);
-            if (candTime > 0) totalDuration = candTime;
-            if (totalDistance > 0 && totalDuration > 0) break;
-        }
-
-        // 2) LineString 경로 좌표 이어붙이기 (중복점 제거)
-        for (Map<String, Object> f : features) {
+            // 2) LineString 경로 좌표 이어붙이기 (중복점 제거)
             Map<String, Object> geom = (Map<String, Object>) f.get("geometry");
             if (geom == null) continue;
             String type = String.valueOf(geom.get("type"));

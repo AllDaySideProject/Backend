@@ -7,6 +7,7 @@ import com.example.Centralthon.domain.route.web.dto.LocationRes;
 import com.example.Centralthon.global.util.geo.GeoUtils;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PedMatrixBuilder {
     private final PedestrianRoutingPort routingPort;
 
@@ -68,6 +70,7 @@ public class PedMatrixBuilder {
                                 .jitter(0.5))
                         // 실패 시 하버사인 폴백
                         .onErrorResume(ex -> {
+                            log.warn("API 호출 실패, 원인 : {}",ex.getMessage());
                             fallbackCount.incrementAndGet();
                             double dMeter = GeoUtils.calculateDistance(a.lat(), a.lng(), b.lat(), b.lng());
                             return Mono.just(new PedSegment(Math.round(dMeter), 0L, List.of(a, b)));
