@@ -4,6 +4,8 @@ import com.example.Centralthon.domain.menu.web.dto.MenuDetailsRes;
 import com.example.Centralthon.domain.menu.web.dto.MenuIdsReq;
 import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
 import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -155,4 +157,6 @@ public interface MenuApi {
             )
     )
     ResponseEntity<SuccessResponse<List<MenuDetailsRes>>> details(@RequestBody @Valid MenuIdsReq menus);
+
+    ResponseEntity<SuccessResponse<List<GetTipRes>>> getTips(@RequestBody @Valid GetTipReq getTipReq);
 }

@@ -5,9 +5,15 @@ import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.menu.web.dto.*;
 import com.example.Centralthon.domain.store.entity.Store;
+import com.example.Centralthon.global.external.ai.service.AiService;
+import com.example.Centralthon.global.external.ai.service.AiServiceImpl;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
+import com.example.Centralthon.global.external.exception.AiCommunicationFailedException;
 import com.example.Centralthon.global.util.geo.BoundingBox;
 import com.example.Centralthon.global.util.geo.GeoUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +29,11 @@ import static com.example.Centralthon.global.util.geo.GeoUtils.calculateBounding
 import static com.example.Centralthon.global.util.geo.GeoUtils.calculateDistance;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MenuServiceImpl implements MenuService {
     private final MenuRepository menuRepository;
+    private final AiService aiService;
 
     // 주어진 위도, 경도를 중심으로 반경 2km 이내의 메뉴 조회
     private List<Menu> findMenusWithinRadius(double latitude, double longitude) {
@@ -87,6 +95,16 @@ public class MenuServiceImpl implements MenuService {
         return menuList.stream()
                 .map(menu -> MenuDetailsRes.from(menu))
                 .toList();
+    }
+
+    @Override
+    public List<GetTipRes> getTips(GetTipReq getTipReq) {
+        try{
+            return aiService.getTipFromAi(getTipReq);
+        } catch (Exception e){
+            log.error("AI 서버 호출 실패 {}", e.getMessage());
+            throw new AiCommunicationFailedException();
+        }
     }
 
 }

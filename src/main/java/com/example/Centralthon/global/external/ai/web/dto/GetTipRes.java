@@ -1,4 +1,7 @@
 package com.example.Centralthon.global.external.ai.web.dto;
 
-public record GetTipRes() {
+public record GetTipRes(
+        String title,
+        String content
+) {
 }

@@ -4,6 +4,8 @@ import com.example.Centralthon.domain.menu.service.MenuService;
 
 import com.example.Centralthon.domain.menu.web.dto.*;
 import com.example.Centralthon.domain.order.web.controller.OrderApi;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 
@@ -57,5 +59,12 @@ public class MenuController implements MenuApi {
         List<MenuDetailsRes> menuList = menuService.details(menus);
 
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menuList));
+    }
+
+    // 알뜰 반찬 팁 조회
+    @PostMapping("/tips")
+    public ResponseEntity<SuccessResponse<List<GetTipRes>>> getTips(@RequestBody @Valid GetTipReq getTipReq){
+        List<GetTipRes> tips = menuService.getTips(getTipReq);
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(tips));
     }
 }
