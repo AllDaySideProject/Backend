@@ -4,9 +4,10 @@ import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.domain.menu.exception.MenuNotFoundException;
 import com.example.Centralthon.domain.menu.repository.MenuRepository;
 import com.example.Centralthon.domain.menu.web.dto.*;
-import com.example.Centralthon.domain.store.entity.Store;
+import com.example.Centralthon.domain.menu.web.dto.GetRecommendedMenusReq;
 import com.example.Centralthon.global.external.ai.service.AiService;
-import com.example.Centralthon.global.external.ai.service.AiServiceImpl;
+import com.example.Centralthon.global.external.ai.web.dto.GetMenusByConceptReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetMenusByConceptRes;
 import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
 import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.external.exception.AiCommunicationFailedException;
@@ -19,14 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.example.Centralthon.global.util.geo.GeoUtils.calculateBoundingBox;
-import static com.example.Centralthon.global.util.geo.GeoUtils.calculateDistance;
 
 @Service
 @Slf4j
@@ -98,6 +93,34 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public List<NearbyMenusRes> getRecommendedMenus(GetRecommendedMenusReq getRecommendedMenusReq){
+        // 2km 이내 메뉴 조회
+        List<Menu> menus = findMenusWithinRadius(getRecommendedMenusReq.getLatitude(), getRecommendedMenusReq.getLongitude());
+
+        // 중복 제거한 메뉴 목록
+        Map<String, Menu> uniqueMenus = new LinkedHashMap<>();
+        for (Menu menu : menus) {
+            uniqueMenus.putIfAbsent(menu.getName(), menu);
+        }
+
+        List<String> menuList = new ArrayList<>(uniqueMenus.keySet());
+        List<GetMenusByConceptRes> getMenusByConceptResList = aiService.getMenuByConceptFromAi(
+                GetMenusByConceptReq.builder()
+                        .concept(getRecommendedMenusReq.getConcept())
+                        .count(getRecommendedMenusReq.getCount())
+                        .items(menuList)
+                        .build()
+        );
+
+        return getMenusByConceptResList.stream()
+                .map(res -> {
+                    Menu matchedMenu = uniqueMenus.get(res.inputMenu());
+                    return NearbyMenusRes.from(matchedMenu);
+                })
+                .toList();
+    }
+
+    @Override
     public List<GetTipRes> getTips(GetTipReq getTipReq) {
         try{
             return aiService.getTipFromAi(getTipReq);
@@ -106,5 +129,7 @@ public class MenuServiceImpl implements MenuService {
             throw new AiCommunicationFailedException();
         }
     }
+
+
 
 }

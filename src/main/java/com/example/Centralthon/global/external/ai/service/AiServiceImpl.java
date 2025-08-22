@@ -1,9 +1,6 @@
 package com.example.Centralthon.global.external.ai.service;
 
-import com.example.Centralthon.global.external.ai.web.dto.GetMenusByThemeReq;
-import com.example.Centralthon.global.external.ai.web.dto.GetMenusByThemeRes;
-import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
-import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
+import com.example.Centralthon.global.external.ai.web.dto.*;
 import com.example.Centralthon.global.external.response.ExternalResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +36,14 @@ public class AiServiceImpl implements AiService {
     }
 
     @Override
-    public GetMenusByThemeRes getMenuByThemeFromAi(GetMenusByThemeReq getMenuByThemeReq) {
-        return null;
+    public List<GetMenusByConceptRes> getMenuByConceptFromAi(GetMenusByConceptReq getMenuByThemeReq) {
+        String recommendUrl = baseUrl + "menus/recommend";
+        ResponseEntity<ExternalResponse<GetMenusByConceptWrapper>> response = restTemplate.exchange(
+                recommendUrl,
+                HttpMethod.POST,
+                new HttpEntity<>(getMenuByThemeReq),
+                new ParameterizedTypeReference<ExternalResponse<GetMenusByConceptWrapper>>() {}
+        );
+        return response.getBody().data().items();
     }
 }

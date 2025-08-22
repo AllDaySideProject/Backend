@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorREsponse.getHttpStatus()).body(errorREsponse);
     }
 
-    //ReqeustBody 등으로 전달 받은 JSON 바디의 파싱이 실패 했을 때
+    // ReqeustBody 등으로 전달 받은 JSON 바디의 파싱이 실패 했을 때
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse<?>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException : {}", e.getMessage(), e);
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
 
-    //지원하지 않는 HTTP 메소드를 호출할 경우
+    // 지원하지 않는 HTTP 메소드를 호출할 경우
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponse<?>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         log.error("HttpRequestMethodNotSupportedException : {}", e.getMessage(), e);
