@@ -1,9 +1,8 @@
 package com.example.Centralthon.domain.menu.web.controller;
 
-import com.example.Centralthon.domain.menu.web.dto.MenuDetailsRes;
-import com.example.Centralthon.domain.menu.web.dto.MenuIdsReq;
-import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
-import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
+import com.example.Centralthon.domain.menu.web.dto.*;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -155,4 +154,115 @@ public interface MenuApi {
             )
     )
     ResponseEntity<SuccessResponse<List<MenuDetailsRes>>> details(@RequestBody @Valid MenuIdsReq menus);
+
+
+
+    @Operation(
+            summary = "메뉴 Tip 조회",
+            description = "입력한 메뉴 이름 배열을 기반으로 AI 추천 Tip(활용법/조리법 등)을 반환합니다.<br>" +
+                    "{title, content} 리스트를 반환합니다."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "메뉴 Tip 조회 성공",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SuccessResponse.class),
+                    examples = @ExampleObject(
+                            name = "SUCCESS_200",
+                            value = """
+                    {
+                        "timestamp": "2025-08-22 03:11:13",
+                        "code": "SUCCESS_200",
+                        "httpStatus": 200,
+                        "message": "호출에 성공하였습니다.",
+                        "data": [
+                            {
+                                "title": "콩나물의 변신, 국물 한 스푼",
+                                "content": "콩나물무침을 육수에 넣고 끓이면 시원한 콩나물국이 됩니다."
+                            },
+                            {
+                                "title": "감자볶음, 크리스피한 감자튀김으로",
+                                "content": "감자볶음을 잘게 썰어 튀김가루에 묻혀서 튀기면 바삭한 감자튀김이 됩니다."
+                            },
+                            {
+                                "title": "애호박 볶음, 달콤한 애호박전으로",
+                                "content": "애호박볶음을 반죽에 섞어 팬에 부치면 맛있는 애호박전이 됩니다."
+                            }
+                        ],
+                        "isSuccess": true
+                    }
+                    """
+                    )
+            )
+    )
+    ResponseEntity<SuccessResponse<List<GetTipRes>>> getTips(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "메뉴 이름 배열 요청",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = GetTipReq.class),
+                            examples = @ExampleObject(
+                                    value = """
+                            {
+                                "menus": ["콩나물무침", "감자볶음", "애호박볶음"]
+                            }
+                            """
+                            )
+                    )
+            )
+            @Valid @RequestBody GetTipReq getTipReq);
+
+    @Operation(
+            summary = "메뉴 추천",
+            description = "사용자 위치(latitude, longitude)와 컨셉(concept)을 기반으로 맞춤 메뉴를 추천합니다.<br>" +
+                    "concept는 다음 중 하나만 선택할 수 있습니다: `diet`, `keto`, `low_sodium`, `bulking`, `glycemic`"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "메뉴 추천 성공",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = SuccessResponse.class),
+                    examples = @ExampleObject(
+                            name = "SUCCESS_200",
+                            value = """
+                    {
+                        "timestamp": "2025-08-22 14:36:04",
+                        "code": "SUCCESS_200",
+                        "httpStatus": 200,
+                        "message": "호출에 성공하였습니다.",
+                        "data": [
+                            {
+                                "name": "돼지 목살 스테이크",
+                                "category": "STIR_FRY"
+                            },
+                            ...
+                        ],
+                        "isSuccess": true
+                    }
+                    """
+                    )
+            )
+    )
+    ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> recommend(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "사용자 위치와 추천 컨셉 요청",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = GetRecommendedMenusReq.class),
+                            examples = @ExampleObject(
+                                    value = """
+                            {
+                              "latitude": 37.4752,
+                              "longitude": 127.050,
+                              "concept": "keto",
+                              "count": 15
+                            }
+                            """
+                            )
+                    )
+            )
+            @Valid @RequestBody GetRecommendedMenusReq getRecommendedMenusReq);
+
 }
