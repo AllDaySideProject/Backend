@@ -61,6 +61,7 @@ public class MenuController implements MenuApi {
 
     // 컨셉별 메뉴 추천
     @PostMapping("/recommend")
+    @Override
     public ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> recommend(@RequestBody @Valid GetRecommendedMenusReq getRecommendedMenusReq){
         List<NearbyMenusRes> menusList = menuService.getRecommendedMenus(getRecommendedMenusReq);
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menusList));
@@ -68,6 +69,7 @@ public class MenuController implements MenuApi {
 
     // 알뜰 반찬 팁 조회
     @PostMapping("/tips")
+    @Override
     public ResponseEntity<SuccessResponse<List<GetTipRes>>> getTips(@RequestBody @Valid GetTipReq getTipReq){
         List<GetTipRes> tips = menuService.getTips(getTipReq);
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(tips));
