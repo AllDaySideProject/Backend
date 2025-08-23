@@ -3,22 +3,18 @@ package com.example.Centralthon.domain.menu.web.dto;
 import com.example.Centralthon.domain.menu.entity.Menu;
 import com.example.Centralthon.domain.menu.entity.enums.MenuCategory;
 import com.example.Centralthon.domain.store.entity.Store;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public record StoresByMenuRes(
-        long menuId,
         String storeName,
         double distance,
-        int salePrice,
-        int quantity
+        @JsonUnwrapped MenuItemRes menuItem
 ) {
     public static StoresByMenuRes from(Menu menu, double distance) {
-        Store store = menu.getStore();
         return new StoresByMenuRes(
-                menu.getId(),
-                store.getName(),
+                menu.getStore().getName(),
                 distance,
-                menu.getSalePrice(),
-                menu.getQuantity()
+                MenuItemRes.from(menu)
         );
     }
 }

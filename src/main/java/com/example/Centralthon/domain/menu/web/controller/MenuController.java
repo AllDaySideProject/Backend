@@ -3,13 +3,14 @@ package com.example.Centralthon.domain.menu.web.controller;
 import com.example.Centralthon.domain.menu.service.MenuService;
 
 import com.example.Centralthon.domain.menu.web.dto.*;
-import com.example.Centralthon.domain.order.web.controller.OrderApi;
+import com.example.Centralthon.domain.menu.web.dto.GetRecommendedMenusReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
+import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.response.SuccessResponse;
 import jakarta.validation.Valid;
 
 import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
 import com.example.Centralthon.domain.menu.web.dto.StoresByMenuRes;
-import com.example.Centralthon.global.response.SuccessResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/menus")
@@ -57,5 +57,21 @@ public class MenuController implements MenuApi {
         List<MenuDetailsRes> menuList = menuService.details(menus);
 
         return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menuList));
+    }
+
+    // 컨셉별 메뉴 추천
+    @PostMapping("/recommend")
+    @Override
+    public ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> recommend(@RequestBody @Valid GetRecommendedMenusReq getRecommendedMenusReq){
+        List<NearbyMenusRes> menusList = menuService.getRecommendedMenus(getRecommendedMenusReq);
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(menusList));
+    }
+
+    // 알뜰 반찬 팁 조회
+    @PostMapping("/tips")
+    @Override
+    public ResponseEntity<SuccessResponse<List<GetTipRes>>> getTips(@RequestBody @Valid GetTipReq getTipReq){
+        List<GetTipRes> tips = menuService.getTips(getTipReq);
+        return ResponseEntity.status(HttpStatus.OK).body(SuccessResponse.from(tips));
     }
 }
