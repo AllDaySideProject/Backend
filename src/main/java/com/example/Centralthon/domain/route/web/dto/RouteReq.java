@@ -1,8 +1,6 @@
 package com.example.Centralthon.domain.route.web.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -10,9 +8,13 @@ import java.util.List;
 
 @Getter
 public class RouteReq{
+    @DecimalMin(value = "-90.0", message = "위도는 -90 이상이어야 합니다.")
+    @DecimalMax(value = "90.0", message = "위도는 90 이하이어야 합니다.")
     @NotNull(message = "userLat을 입력해주세요.")
     private Double userLat;
 
+    @DecimalMin(value = "-180.0", message = "경도는 -180 이상이어야 합니다.")
+    @DecimalMax(value = "180.0", message = "경도는 180 이하이어야 합니다.")
     @NotNull(message = "userLng을 입력해주세요.")
     private Double userLng;
 
