@@ -5,6 +5,8 @@ import com.example.Centralthon.domain.store.service.StoreService;
 import com.example.Centralthon.domain.store.web.dto.NearbyStoresRes;
 import com.example.Centralthon.domain.store.web.dto.StoreMenusRes;
 import com.example.Centralthon.global.response.SuccessResponse;
+import com.example.Centralthon.global.validation.Latitude;
+import com.example.Centralthon.global.validation.Longitude;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,8 @@ public class StoreController implements StoreApi {
     @GetMapping("")
     @Override
     public ResponseEntity<SuccessResponse<List<NearbyStoresRes>>> nearbyStores(
-            @RequestParam("lat") Double lat,
-            @RequestParam("lng") Double lng){
+            @RequestParam("lat") @Latitude Double lat,
+            @RequestParam("lng") @Longitude Double lng){
 
         List<NearbyStoresRes> stores = storeService.nearbyStores(lat, lng);
 
@@ -35,8 +37,8 @@ public class StoreController implements StoreApi {
     @Override
     public ResponseEntity<SuccessResponse<StoreMenusRes>> getStoreMenus(
             @PathVariable Long storeId,
-            @RequestParam("lat") Double lat,
-            @RequestParam("lng") Double lng){
+            @RequestParam("lat") @Latitude Double lat,
+            @RequestParam("lng") @Longitude Double lng){
 
         StoreMenusRes menus = storeService.getStoreMenus(storeId, lat, lng);
 

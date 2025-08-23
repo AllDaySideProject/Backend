@@ -7,6 +7,8 @@ import com.example.Centralthon.domain.menu.web.dto.GetRecommendedMenusReq;
 import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
 import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.response.SuccessResponse;
+import com.example.Centralthon.global.validation.Latitude;
+import com.example.Centralthon.global.validation.Longitude;
 import jakarta.validation.Valid;
 
 import com.example.Centralthon.domain.menu.web.dto.NearbyMenusRes;
@@ -29,8 +31,8 @@ public class MenuController implements MenuApi {
     @GetMapping("")
     @Override
     public ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> nearbyMenus(
-            @RequestParam("lat") Double lat,
-            @RequestParam("lng") Double lng) {
+            @RequestParam("lat") @Latitude Double lat,
+            @RequestParam("lng") @Longitude Double lng) {
 
         List<NearbyMenusRes> menus = menuService.nearbyMenus(lat,lng);
 
@@ -42,8 +44,8 @@ public class MenuController implements MenuApi {
     @Override
     public ResponseEntity<SuccessResponse<List<StoresByMenuRes>>> storesByMenu(
             @RequestParam("name") String name,
-            @RequestParam("lat") Double lat,
-            @RequestParam("lng") Double lng) {
+            @RequestParam("lat") @Latitude Double lat,
+            @RequestParam("lng") @Longitude Double lng) {
 
         List<StoresByMenuRes> stores = menuService.storesByMenu(name,lat,lng);
 

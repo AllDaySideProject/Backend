@@ -19,7 +19,7 @@ public class RouteReq{
     private Double userLng;
 
     @NotEmpty(message = "storeIds 리스트가 비어있습니다.")
-    @Size(max = 5, message = "경유지는 최대 5개까지만 지정할 수 있습니다.")
+    @Size(max = 8, message = "경유지는 최대 8개까지만 지정할 수 있습니다.")
     @UniqueElements(message = "storeIds에 중복 값이 포함되어 있습니다.")
     private List<Long> storeIds;
 }
