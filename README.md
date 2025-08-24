@@ -6,7 +6,8 @@ Spring Boot를 기반으로 구축되었으며, **FastAPI 기반 AI 추천 서�
 ---
 
 ## 🚀 Tech Stack
-<img src="docs/images/server.png" alt="서버 아키텍처 구조도" width="600" />
+<img width="2097" height="1689" alt="struct-be" src="https://github.com/user-attachments/assets/a10dd991-3e69-46dc-8eb0-152d27e3c1e4" />
+
 
 ### 🔹 Backend
 - **Java 21**
