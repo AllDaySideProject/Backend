@@ -4,6 +4,8 @@ import com.example.Centralthon.domain.menu.web.dto.*;
 import com.example.Centralthon.global.external.ai.web.dto.GetTipReq;
 import com.example.Centralthon.global.external.ai.web.dto.GetTipRes;
 import com.example.Centralthon.global.response.SuccessResponse;
+import com.example.Centralthon.global.validation.Latitude;
+import com.example.Centralthon.global.validation.Longitude;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,9 +58,9 @@ public interface MenuApi {
     )
     ResponseEntity<SuccessResponse<List<NearbyMenusRes>>> nearbyMenus(
             @Parameter(name = "lat", description = "사용자 위도", example = "37.468355", required = true)
-            @RequestParam("lat") Double lat,
+            @RequestParam("lat") @Latitude Double lat,
             @Parameter(name = "lng", description = "사용자 경도", example = "127.039073", required = true)
-            @RequestParam("lng") Double lng);
+            @RequestParam("lng") @Longitude Double lng);
 
     @Operation(
             summary = "특정 메뉴 판매 가게 조회",
@@ -104,9 +106,9 @@ public interface MenuApi {
             @Parameter(name = "name", description = "메뉴 이름(공백 포함하여 완전일치)", example = "두부 조림", required = true)
             @RequestParam("name") String name,
             @Parameter(name = "lat", description = "사용자 위도", example = "37.468355", required = true)
-            @RequestParam("lat") Double lat,
+            @RequestParam("lat") @Latitude Double lat,
             @Parameter(name = "lng", description = "사용자 경도", example = "127.039073", required = true)
-            @RequestParam("lng") Double lng);
+            @RequestParam("lng") @Longitude Double lng);
 
     @Operation(
             summary = "메뉴 상세 조회",

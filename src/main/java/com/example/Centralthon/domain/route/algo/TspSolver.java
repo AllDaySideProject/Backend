@@ -2,6 +2,7 @@ package com.example.Centralthon.domain.route.algo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.stream.IntStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +12,10 @@ public final class TspSolver {
 
     public static List<Integer> solveOpenTour(double[][] d) {
         int k = d.length;
+        if (k <= 1) {
+            return IntStream.range(0, k).boxed().toList(); // [ ] or [0]
+        }
+
         // 초기화 작업
         boolean[] used = new boolean[k];
         List<Integer> path = new ArrayList<>();
@@ -43,6 +48,7 @@ public final class TspSolver {
         int n = tour.size();
         while (improved) {
             improved = false;
+            outer:
             for (int i = 1; i < n - 2; i++) {
                 for (int k = i + 1; k < n - 1; k++) {
                     double delta =
@@ -53,6 +59,7 @@ public final class TspSolver {
                     if (delta < -1e-6) {
                         Collections.reverse(tour.subList(i, k + 1));
                         improved = true;
+                        break outer;
                     }
                 }
             }

@@ -6,6 +6,8 @@ import com.example.Centralthon.domain.order.web.dto.CreateOrderRes;
 import com.example.Centralthon.domain.store.web.dto.NearbyStoresRes;
 import com.example.Centralthon.domain.store.web.dto.StoreMenusRes;
 import com.example.Centralthon.global.response.SuccessResponse;
+import com.example.Centralthon.global.validation.Latitude;
+import com.example.Centralthon.global.validation.Longitude;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -60,9 +62,9 @@ public interface StoreApi {
     )
     ResponseEntity<SuccessResponse<List<NearbyStoresRes>>> nearbyStores(
             @Parameter(name = "lat", description = "사용자 위도", example = "37.468355", required = true)
-            @RequestParam("lat") Double lat,
+            @RequestParam("lat") @Latitude Double lat,
             @Parameter(name = "lng", description = "사용자 경도", example = "127.039073", required = true)
-            @RequestParam("lng") Double lng);
+            @RequestParam("lng") @Longitude Double lng);
 
     @Operation(
             summary = "가게에서 판매 중인 메뉴 조회",
@@ -117,7 +119,7 @@ public interface StoreApi {
             @Parameter(name = "storeId", in = ParameterIn.PATH, description = "가게 ID", example = "1", required = true)
             @PathVariable Long storeId,
             @Parameter(name = "lat", in = ParameterIn.QUERY, description = "사용자 위도", example = "37.468355", required = true)
-            @RequestParam("lat") Double lat,
+            @RequestParam("lat") @Latitude Double lat,
             @Parameter(name = "lng", in = ParameterIn.QUERY, description = "사용자 경도", example = "127.039073", required = true)
-            @RequestParam("lng") Double lng);
+            @RequestParam("lng") @Longitude Double lng);
 }

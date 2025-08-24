@@ -7,10 +7,14 @@ import com.example.Centralthon.domain.route.web.dto.LocationRes;
 import com.example.Centralthon.global.util.geo.GeoUtils;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.*;
@@ -20,12 +24,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class PedMatrixBuilder {
     private final PedestrianRoutingPort routingPort;
 
-    private static final Duration PER_CALL_TIMEOUT = Duration.ofSeconds(3);
-    private static final int      RETRIES     = 3;
-    private static final Duration RETRY_DELAY = Duration.ofMillis(250);
+    @Value("${route.ped.per-call-timeout:3s}")
+    private Duration perCallTimeout;
+
+    @Value("${route.ped.retries:3}")
+    private int retries;
+
+    @Value("${route.ped.retry-delay:250ms}")
+    private Duration retryDelay;
+
+    @Value("${route.ped.concurrency:8}")
+    private int defaultConcurrency;
 
     public PedMatrix build(List<LocationRes> nodes) {
         // 전체 노드 수 (0 = 사용자, 1..n = 가게)
@@ -50,13 +63,14 @@ public class PedMatrixBuilder {
                 LocationRes b = nodes.get(jj);
 
                 Mono<Void> call = routingPort.fetchSegment(a, b)
-                        .timeout(PER_CALL_TIMEOUT)
+                        .timeout(perCallTimeout)
                         // 일시적 오류만 3회 재시도
-                        .retryWhen(reactor.util.retry.Retry
-                                .fixedDelay(RETRIES, RETRY_DELAY)
-                                .filter(this::isTransientError))
+                        .retryWhen(Retry.fixedDelay(retries, retryDelay)
+                                .filter(this::isTransientError)
+                                .jitter(0.5))
                         // 실패 시 하버사인 폴백
                         .onErrorResume(ex -> {
+                            log.warn("API 호출 실패, 원인 : {}",ex.getMessage());
                             fallbackCount.incrementAndGet();
                             double dMeter = GeoUtils.calculateDistance(a.lat(), a.lng(), b.lat(), b.lng());
                             return Mono.just(new PedSegment(Math.round(dMeter), 0L, List.of(a, b)));
@@ -71,7 +85,14 @@ public class PedMatrixBuilder {
                 calls.add(call);
             }
         }
-        Mono.when(calls).block();
+        int pairs = calls.size();
+        int concurrency = Math.min(defaultConcurrency, Math.max(1, pairs));
+
+        // 동시에 최대 concurrency개만 실행
+        Flux.fromIterable(calls)
+                .flatMap(m -> m, concurrency)
+                .then()
+                .block();
 
         // 모든 세그먼트가 폴백 시 예외 처리
         int totalCalls = calls.size();

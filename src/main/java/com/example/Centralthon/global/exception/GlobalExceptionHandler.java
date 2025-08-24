@@ -15,10 +15,12 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import java.util.List;
 
 
 @RestControllerAdvice
@@ -103,6 +105,21 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse<?>> handleMissingRequestParam(MissingServletRequestParameterException e) {
         log.error("MissingServletRequestParameterException : {}", e.getMessage(), e);
         ErrorResponse<?> errorResponse = ErrorResponse.of(ErrorResponseCode.INVALID_HTTP_MESSAGE_PARAMETER, e.getParameterName() + " 값은 필수입니다.");
+        return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
+    }
+
+    // @RequestParam 검증 실패 (Validation)
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse<?>> handleHandlerMethodValidation(HandlerMethodValidationException  e) {
+        log.error("HandlerMethodValidationException : {}", e.getMessage(), e);
+
+        List<String> names = e.getParameterValidationResults().stream()
+                .map(r -> r.getMethodParameter().getParameterName())
+                .distinct()
+                .toList();
+        String msg = "잘못된 요청 파라미터: " + String.join(", ", names);
+
+        ErrorResponse<?> errorResponse = ErrorResponse.of(ErrorResponseCode.INVALID_HTTP_MESSAGE_PARAMETER,msg);
         return ResponseEntity.status(errorResponse.getHttpStatus()).body(errorResponse);
     }
 
