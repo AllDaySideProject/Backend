@@ -6,7 +6,7 @@ Spring Boot를 기반으로 구축되었으며, **FastAPI 기반 AI 추천 서�
 ---
 
 ## 🚀 Tech Stack
-<img width="2097" height="1689" alt="struct-be" src="https://github.com/user-attachments/assets/a10dd991-3e69-46dc-8eb0-152d27e3c1e4" />
+<img width="1045" height="844" alt="struct-be" src="https://github.com/user-attachments/assets/a10dd991-3e69-46dc-8eb0-152d27e3c1e4" />
 
 
 ### 🔹 Backend
@@ -92,6 +92,11 @@ Spring Boot를 기반으로 구축되었으며, **FastAPI 기반 AI 추천 서�
 
 
 👉 GitHub Actions에서 **`main` 브랜치에 push 시 자동 실행**
+
+---
+## 📊 ERD
+<img width="885" height="543" alt="image" src="https://github.com/user-attachments/assets/35bf67e7-59e4-4079-8ff5-2290b61343ed" />
+
 
 ---
 
