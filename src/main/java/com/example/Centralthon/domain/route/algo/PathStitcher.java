@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,12 @@ public class PathStitcher {
             if (seg == null) throw new RouteSegmentMissingException();
 
             List<LocationRes> p = seg.path();
+
+            if (i > j && p != null && p.size() >= 2) {
+                p = new ArrayList<>(p);
+                Collections.reverse(p);
+            }
+
             if (merged.isEmpty()) merged.addAll(p);
             else {
                 if (!p.isEmpty() && !merged.isEmpty()
